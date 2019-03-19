@@ -1,5 +1,4 @@
 import java.util.*;
-//ododododo
 
 public class board {
 	private char[][] board;
@@ -148,7 +147,8 @@ public class board {
 	private int[] minimax(int depth, int alpha, int beta) {
 		int score;
 		int bestMove = -1;
-		if (depth == 0) {
+		List<Integer> nextMoves = getMoves();
+		if (nextMoves.isEmpty() || depth == 0) {
 			score = evaluate();
 			return new int[] {score, bestMove};
 		}
@@ -174,5 +174,10 @@ public class board {
 			undoMove();
 		}
 		return new int[] {score, bestMove};
+	}
+	
+	public void makeAIMove() {
+		int depth = 5;
+		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
 }
