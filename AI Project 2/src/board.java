@@ -8,6 +8,8 @@ public class board {
 	private int maxX;
 	private int maxO;
 	private List<Integer> moveList;
+	private int mySeed;
+	private int opponentSeed;
 	
 	
 	public board(int size, int target) {
@@ -16,6 +18,8 @@ public class board {
 		this.totalMoves = 0;
 		this.target = target;
 		this.moveList = new LinkedList<>();
+		this.mySeed = 1;
+		this.opponentSeed = 2;
 	}
 	
 	public void printGame() {
@@ -176,8 +180,70 @@ public class board {
 		return new int[] {score, bestMove};
 	}
 	
+<<<<<<< HEAD
 	public void makeAIMove() {
 		int depth = 5;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
+=======
+	private int calculateScore(char[][]board, int move, int seed) {
+		int[][] intBoard = convertBoard(board);
+		int i = move / size;
+		int j = move % size;
+		intBoard[i][j] = seed;
+		int hFactor = calculateRowScore(intBoard, seed, i, j);
+		int hScore = hFactor * 50;
+		int vFactor = calculateColScore(intBoard, seed, i , j);
+		int vScore = vFactor * 50;
+		
+		return 0;
+	}
+	
+	private int calculateRowScore(int[][]board, int seed, int row, int col) {
+		int hFactor = 0;
+		for (int m = row; m < size; m++) {
+			if(board[m][col] == seed) hFactor++;
+			else break;
+		}
+		if(row > 0) {
+			for (int m = row-1; m >= 0; m--) {
+				if(board[m][col] == seed) hFactor++;
+				else break;
+			}
+		}
+		return hFactor;
+	}
+	
+	private int calculateColScore(int[][]board, int seed, int row, int col) {
+		int vFactor = 0;
+		for (int m = col; m < size; m++) {
+			if(board[row][m] == seed) vFactor++;
+			else break;
+		}
+		if(row > 0) {
+			for (int m = col-1; m >= 0; m--) {
+				if(board[row][m] == seed) vFactor++;
+				else break;
+			}
+		}
+		return vFactor;
+	}
+	
+	private int[][] convertBoard(char[][]board) {
+		int[][] convertBoard = new int[size][size];
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[i][j] == 'X') {
+					convertBoard[i][j] = 1;
+				}
+				else if(board[i][j] == 'O') {
+					convertBoard[i][j] = 2;
+				}
+				else {
+					convertBoard[i][j] = 0;
+				}
+			}
+		}
+		return convertBoard;
+>>>>>>> 437e80419a852f1c2b4173d9895319ed1e3f62f5
 	}
 }
