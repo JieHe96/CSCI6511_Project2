@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class board {
+public class Board {
 	private char[][] board;
 	private int size;
 	private int totalMoves;
@@ -8,16 +8,20 @@ public class board {
 	private int maxX;
 	private int maxO;
 	private List<Integer> moveList;
+	private List<Integer> maxXList;
+	private List<Integer> maxOList;
 	private int mySeed;
 	private int opponentSeed;
 	
 	
-	public board(int size, int target) {
+	public Board(int size, int target) {
 		this.board = new char[size][size];
 		this.size = size;
 		this.totalMoves = 0;
 		this.target = target;
 		this.moveList = new LinkedList<>();
+		this.maxXList = new LinkedList<>();
+		this.maxOList = new LinkedList<>();
 		this.mySeed = 1;
 		this.opponentSeed = 2;
 	}
@@ -60,11 +64,19 @@ public class board {
 			update(i, j, 'O');
 		}
 		totalMoves++;
+		checkWin();
 	}
 	
 	public void undoMove() {
 		int last = moveList.get(moveList.size()-1);
 		board[last/size][last%size] = '\u0000';
+		if (totalMoves % 2 == 0) {
+			maxOList.remove(maxOList.size()-1);
+			maxO = maxOList.get(maxOList.size()-1);
+		} else {
+			maxXList.remove(maxXList.size()-1);
+			maxX = maxXList.get(maxXList.size()-1);
+		}
 		totalMoves--;
 	}
 	
@@ -107,7 +119,7 @@ public class board {
 			y--;
 		}
 		x = i + 1;
-		x = j + 1;
+		y = j + 1;
 		while (x < size && y < size && board[x][y] == ch) {
 			ldgCount++;
 			x++;
@@ -129,8 +141,10 @@ public class board {
 		}
 		if (ch == 'X') {
 			maxX = Math.max(maxX, Math.max(ldgCount, rdgCount));
+			maxXList.add(maxX);
 		} else {
 			maxO = Math.max(maxO, Math.max(ldgCount, rdgCount));
+			maxOList.add(maxO);
 		}
 	}
 	
@@ -182,9 +196,59 @@ public class board {
 	
 
 	public void makeAIMove() {
-		int depth = 5;
+		int depth = 4;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
+	
+	
+	/*
+	private int evaluateRow(char ch) {
+		int score = 0;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			for (int j = 0 ; j < size; i++) {
+				if (board[i][j] == ch) {
+					count++;
+				} else {
+					if (count > 1) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+					}
+				}
+				if (j == size - 1 && count > 1) {
+					score += (int) Math.pow(10, count);
+				}
+			}
+		}
+		return score;
+	}
+	
+	private int evaluateCol(char ch) {
+		int score = 0;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			for (int j = 0 ; j < size; i++) {
+				if (board[j][i] == ch) {
+					count++;
+				} else {
+					if (count > 1) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+					}
+				}
+				if (j == size - 1 && count > 1) {
+					score += (int) Math.pow(10, count);
+				}
+			}
+		}
+		return score;
+	}
+	*/
+ 	
+	
+	
+	
+	
 	private int calculateScore(char[][]board, int move, int seed) {
 		int[][] intBoard = convertBoard(board);
 		int i = move / size;
