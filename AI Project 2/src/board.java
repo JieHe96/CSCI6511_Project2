@@ -180,11 +180,11 @@ public class board {
 		return new int[] {score, bestMove};
 	}
 	
-<<<<<<< HEAD
+
 	public void makeAIMove() {
 		int depth = 5;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
-=======
+	}
 	private int calculateScore(char[][]board, int move, int seed) {
 		int[][] intBoard = convertBoard(board);
 		int i = move / size;
@@ -194,8 +194,9 @@ public class board {
 		int hScore = hFactor * 50;
 		int vFactor = calculateColScore(intBoard, seed, i , j);
 		int vScore = vFactor * 50;
-		
-		return 0;
+		int dFactor = calculateDiaScore(intBoard, seed, i , j);
+		int dScore = dFactor * 50;
+		return hScore + vScore + dScore;
 	}
 	
 	private int calculateRowScore(int[][]board, int seed, int row, int col) {
@@ -229,7 +230,26 @@ public class board {
 	}
 	
 	private int calculateDiaScore(int[][]board, int seed, int row, int col) {
-		
+		int dFactor = 0;
+		int m = row;
+		int n = col;
+		while(m < size && n < size) {
+			if(board[m][n] == seed) dFactor++;
+			else break;
+			m++;
+			n++;
+		}
+		m = row;
+		n = col;
+		if (m > 0 && n > 0) {
+			while(m-1 >=0 && n-1 >=0) {
+				if(board[m][n] == seed) dFactor++;
+				else break;
+				m--;
+				n--;
+			}
+		}
+		return dFactor;
 	}
 	
 	private int[][] convertBoard(char[][]board) {
