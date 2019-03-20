@@ -190,66 +190,139 @@ public class board {
 		int i = move / size;
 		int j = move % size;
 		intBoard[i][j] = seed;
-		int hFactor = calculateRowScore(intBoard, seed, i, j);
-		int hScore = hFactor * 50;
-		int vFactor = calculateColScore(intBoard, seed, i , j);
-		int vScore = vFactor * 50;
-		int dFactor = calculateDiaScore(intBoard, seed, i , j);
-		int dScore = dFactor * 50;
-		return hScore + vScore + dScore;
+		int rScore = evaluateRow(intBoard, seed);
+		int cScore = evaluateCol(intBoard, seed);
+		int dScore = evaluateDig(intBoard, seed);
+		int totalScore = rScore + cScore + dScore;
+		return totalScore;
 	}
 	
-	private int calculateRowScore(int[][]board, int seed, int row, int col) {
-		int hFactor = 0;
-		for (int m = row; m < size; m++) {
-			if(board[m][col] == seed) hFactor++;
-			else break;
-		}
-		if(row > 0) {
-			for (int m = row-1; m >= 0; m--) {
-				if(board[m][col] == seed) hFactor++;
-				else break;
+	private int evaluateRow(int[][]board, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[i][j] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
 			}
+			max = 0;
 		}
-		return hFactor;
+		return score;
 	}
 	
-	private int calculateColScore(int[][]board, int seed, int row, int col) {
-		int vFactor = 0;
-		for (int m = col; m < size; m++) {
-			if(board[row][m] == seed) vFactor++;
-			else break;
-		}
-		if(row > 0) {
-			for (int m = col-1; m >= 0; m--) {
-				if(board[row][m] == seed) vFactor++;
-				else break;
+	private int evaluateCol(int[][]board, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[j][i] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+					
+				}
 			}
+			max = 0;
 		}
-		return vFactor;
+		return score;
 	}
 	
-	private int calculateDiaScore(int[][]board, int seed, int row, int col) {
-		int dFactor = 0;
-		int m = row;
-		int n = col;
-		while(m < size && n < size) {
-			if(board[m][n] == seed) dFactor++;
-			else break;
-			m++;
-			n++;
-		}
-		m = row;
-		n = col;
-		if (m > 0 && n > 0) {
-			while(m-1 >=0 && n-1 >=0) {
-				if(board[m][n] == seed) dFactor++;
-				else break;
+	private int evaluateDig(int[][]board, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 1; i < size; i++) {
+			int j = 0;
+			int m = i;
+			while(m >= 0 && j < size) {
+				if(board[m][j] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
 				m--;
-				n--;
+				j++;
 			}
+			max = 0;
 		}
-		return dFactor;
+		max = 0;
+		for(int j = 1; j < size-1; j++) {
+			int i = size-1;
+			int n = j;
+			while(i >= 0 && n < size) {
+				if(board[i][n] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				i--;
+				n++;
+			}
+			max = 0;
+		}
+		max = 0;
+		for(int i = size-2; i >= 0; i--) {
+			int j = 0;
+			int m = i;
+			while(m < size && j < size) {
+				if(board[m][j] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				m++;
+				j++;
+			}
+			max = 0;
+		}
+		max = 0;
+		for(int j = 1; j < size-1; j++) {
+			int i = 0;
+			int n = j;
+			while(i < size && n < size) {
+				if(board[i][n] == seed) {
+					max++;
+				}
+				else {
+					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				i++;
+				n++;
+			}
+			max = 0;
+		}
+		return score;
 	}
 	
 	private int[][] convertBoard(char[][]board) {
