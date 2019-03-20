@@ -228,6 +228,10 @@ public class board {
 		return vFactor;
 	}
 	
+	private int calculateDiaScore(int[][]board, int seed, int row, int col) {
+		
+	}
+	
 	private int[][] convertBoard(char[][]board) {
 		int[][] convertBoard = new int[size][size];
 		for(int i = 0; i < size; i++) {
@@ -244,6 +248,5 @@ public class board {
 			}
 		}
 		return convertBoard;
->>>>>>> 437e80419a852f1c2b4173d9895319ed1e3f62f5
 	}
 }
