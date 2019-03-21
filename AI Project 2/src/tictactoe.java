@@ -27,5 +27,16 @@ public class tictactoe {
 		game.makeAIMove();
 		game.printGame();
 		System.out.println();
+		game.makeAIMove();
+		game.printGame();
+		System.out.println();
+		game.makeAIMove();
+		game.printGame();
+		System.out.println();
+		for(int i = 0; i < 7; i++) {
+			game.makeAIMove();
+			game.printGame();
+			System.out.println();
+		}
 	}
 }

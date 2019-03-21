@@ -171,14 +171,15 @@ public class Board {
 	}
 	 
 	private int[] minimax(int depth, int alpha, int beta) {
-		int score;
+		int score = 0;
 		int bestMove = -1;
 		List<Integer> nextMoves = getMoves();
 		if (nextMoves.isEmpty() || depth == 0) {
-			score = calculateScore(this.board, 1) - calculateScore(this.board, 2);
+			score = calculateScore(this.board, 1, 2);
+			//System.out.println("Score: " + score);
 			return new int[] {score, bestMove};
 		}
-		score = 0;
+		//score = 0;
 		for (int n: nextMoves) {
 			if ((totalMoves + depth) % 2 == 0) {
 				board[n/size][n%size] = 'X';
@@ -312,12 +313,18 @@ public class Board {
 	*/
 	
 
-	private int calculateScore(char[][]board, int seed) {
+	private int calculateScore(char[][]board, int seed, int oppSeed) {
 		int[][] intBoard = convertBoard(board);
 		int rScore = evaluateRow(intBoard, seed);
 		int cScore = evaluateCol(intBoard, seed);
 		int dScore = evaluateDig(intBoard, seed);
-		int totalScore = rScore + cScore + dScore;
+		int orScore = evaluateRow(intBoard, oppSeed);
+		int ocScore = evaluateCol(intBoard, oppSeed);
+		int odScore = evaluateDig(intBoard, oppSeed);
+		int cScore1 = evaluateCol2(intBoard, oppSeed, seed);
+		int rScore1 = evaluateRow2(intBoard, oppSeed, seed);
+		int totalScore = rScore + cScore + dScore + cScore1 + rScore1 - orScore - ocScore - odScore;
+		//int totalScore = 0;
 		return totalScore;
 	}
 	
@@ -342,6 +349,27 @@ public class Board {
 		return score;
 	}
 	
+	private int evaluateRow2(int[][]board, int oppSeed, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[i][j] == oppSeed) {
+					max++;
+				}
+				else {
+					if(board[i][j] == seed) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+			}
+			max = 0;
+		}
+		return score;
+	}
+	
 	private int evaluateCol(int[][]board, int seed) {
 		int max = 0;
 		int score = 0;
@@ -352,6 +380,28 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+					
+				}
+			}
+			max = 0;
+		}
+		return score;
+	}
+	
+	private int evaluateCol2(int[][]board, int oppSeed, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[j][i] == oppSeed) {
+					max++;
+				}
+				else {
+					if(board[j][i] == seed) {
 						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
