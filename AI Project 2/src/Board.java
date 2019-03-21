@@ -156,14 +156,18 @@ public class Board {
 		}
 	}
 	
-	public void checkWin() {
+	public int checkWin() {
 		if (maxX == target) {
 			declareWin('X');
+			return 1;
 		} else if (maxO == target) {
 			declareWin('O');
+			return 1;
 		} else if (totalMoves == size * size) {
 			System.out.println("Tie game!");
+			return 1;
 		}
+		return 0;
 	}
 	
 	public void declareWin(char ch) {
@@ -323,7 +327,8 @@ public class Board {
 		int odScore = evaluateDig(intBoard, oppSeed);
 		int cScore1 = evaluateCol2(intBoard, oppSeed, seed);
 		int rScore1 = evaluateRow2(intBoard, oppSeed, seed);
-		int totalScore = rScore + cScore + dScore + cScore1 + rScore1 - orScore - ocScore - odScore;
+		int totalScore = rScore + cScore + dScore + cScore1 + rScore1;
+		//int totalScore = rScore + cScore + dScore + cScore1 + rScore1 - orScore - ocScore - odScore;
 		//int totalScore = 0;
 		return totalScore;
 	}
@@ -338,7 +343,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -358,8 +363,8 @@ public class Board {
 					max++;
 				}
 				else {
-					if(board[i][j] == seed) {
-						int tmp = (int) Math.pow(10, max);
+					if(max > 1 && board[i][j] == seed) {
+						int tmp = (int) Math.pow(7, max);
 						score += tmp;
 					}
 					max = 0;
@@ -380,7 +385,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -401,8 +406,8 @@ public class Board {
 					max++;
 				}
 				else {
-					if(board[j][i] == seed) {
-						int tmp = (int) Math.pow(10, max);
+					if(max > 1 && board[j][i] == seed) {
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -426,7 +431,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -446,7 +451,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -466,7 +471,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;
@@ -486,7 +491,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(10, max);
+						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
 					max = 0;

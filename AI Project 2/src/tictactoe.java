@@ -4,7 +4,7 @@ import java.io.*;
 public class tictactoe {
 
 	public static void main(String[] args) {
-		Board game = new Board(6, 4);
+		Board game = new Board(5, 3);
 		/*
 		game.makeMove(12);
 		game.printGame();
@@ -12,31 +12,27 @@ public class tictactoe {
 		game.printGame();
 		System.out.println();
 		*/
+//		while(true) {
+//			game.makeAIMove();
+//			game.printGame();
+//			System.out.println();
+//			if(game.checkWin() == 1) break;
+//		}
+		
 		game.makeAIMove();
 		game.printGame();
 		System.out.println();
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
-		game.makeMove(6);
-		game.printGame();
-		System.out.println();
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
-		for(int i = 0; i < 7; i++) {
+		Scanner scanner = new Scanner(System.in);
+		while(true) {
+			String line = scanner.nextLine();
+			int move = Integer.parseInt(line);
+			game.makeMove(move);
+			game.printGame();
+			System.out.println();
 			game.makeAIMove();
 			game.printGame();
 			System.out.println();
 		}
+
 	}
 }
