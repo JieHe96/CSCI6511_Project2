@@ -44,7 +44,7 @@ public class Board {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				if (board[row][col] != 'X' && board[row][col] != 'O') {
-					moves.add(row * 10 + col);
+					moves.add(row * size + col);
 				}
 			}
 		}
@@ -178,38 +178,140 @@ public class Board {
 			score = calculateScore(this.board, 1) - calculateScore(this.board, 2);
 			return new int[] {score, bestMove};
 		}
-		for (int n: getMoves()) {
+		score = 0;
+		for (int n: nextMoves) {
 			if ((totalMoves + depth) % 2 == 0) {
-				makeMove(n);
+				board[n/size][n%size] = 'X';
 				score = minimax(depth - 1, alpha, beta)[0];
 				if (score > alpha) {
 					alpha = score;
 					bestMove = n;
 				}
 			} else {
-				makeMove(n);
+				board[n/size][n%size] = 'O';
 				score = minimax(depth - 1, alpha, beta)[0];
 				if (score < beta) {
 					beta = score;
 					bestMove = n;
 				}
 			}
-			undoMove();
+			board[n/size][n%size] = '\u0000';
 			if (alpha >= beta) {
 				break;
 			}
-			return new int[] {score, bestMove};
 		}
-		return new int[] {0,0};
+		return new int[] {score, bestMove};
 	}
 	
 
 	public void makeAIMove() {
-		int depth = 4;
+		int depth = 6;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
- 	
 	
+	/*
+	private int evaluate(char ch) {
+		return evaluateRow(ch) + evaluateCol(ch);
+	}
+	
+	private int evaluateRow(char ch) {
+		int score = 0;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			int start = 0;
+			for (int j = 0; j < size; j++) {
+				if (board[i][j] == ch) {
+					if (count == 0) {
+						start = j;
+					}
+					count++;
+					if (j == size - 1) {
+						if (start != 0) {
+							if (board[i][start-1] != '\u0000') {
+								score += (int) Math.pow(10, count-2);
+							} else {
+								score += (int) Math.pow(10, count-1);
+							}
+						} else {
+							score += (int) Math.pow(10, count-2);
+						}
+					}
+				} else {
+					if (j != size - 1) {
+						if (board[i][j] != '\u0000') {
+							if (start == 0 || board[i][start-1] != '\u0000') {
+								score += (int) Math.pow(10, count-2);
+							} else {
+								score += (int) Math.pow(10, count-1);
+							}
+						} else {
+							if (start == 0 || board[i][start-1] != '\u0000') {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								score += (int) Math.pow(10, count);
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	private int evaluateCol(char ch) {
+		int score = 0;
+		for (int i = 0; i < size; i++) {
+			int count = 0;
+			int start = 0;
+			for (int j = 0; j < size; j++) {
+				if (board[j][i] == ch) {
+					if (count == 0) {
+						start = j;
+					}
+					count++;
+					if (j == size - 1) {
+						if (start != 0) {
+							if (board[start-1][i] != '\u0000') {
+								score += (int) Math.pow(10, count-2);
+							} else {
+								score += (int) Math.pow(10, count-1);
+							}
+						} else {
+							score += (int) Math.pow(10, count-2);
+						}
+					}
+				} else {
+					if (j != size - 1) {
+						if (board[j][i] != '\u0000') {
+							if (start == 0 || board[start-1][i] != '\u0000') {
+								score += (int) Math.pow(10, count-2);
+							} else {
+								score += (int) Math.pow(10, count-1);
+							}
+						} else {
+							if (start == 0 || board[start-1][i] != '\u0000') {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								score += (int) Math.pow(10, count);
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	private int evaluateLD(char ch) {
+		for (int i = 0; i < size; i++) {
+			
+		}
+	}
+	*/
+	
+
 	private int calculateScore(char[][]board, int seed) {
 		int[][] intBoard = convertBoard(board);
 		int rScore = evaluateRow(intBoard, seed);
