@@ -30,12 +30,12 @@ public class Board {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				if (board[row][col] != 'X' && board[row][col] != 'O') {
-					System.out.print(" ");
+					System.out.print("_.");
 				} else {
-					System.out.print(board[row][col]);
+					System.out.print(board[row][col] + ".");
 				}
-				System.out.println();
 			}
+			System.out.println();
 		}
 	}
 	
@@ -43,7 +43,7 @@ public class Board {
 		List<Integer> moves = new LinkedList<>();
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
-				if (board[row][col] != 'X' || board[row][col] != 'O') {
+				if (board[row][col] != 'X' && board[row][col] != 'O') {
 					moves.add(row * 10 + col);
 				}
 			}
@@ -72,10 +72,18 @@ public class Board {
 		board[last/size][last%size] = '\u0000';
 		if (totalMoves % 2 == 0) {
 			maxOList.remove(maxOList.size()-1);
-			maxO = maxOList.get(maxOList.size()-1);
+			if (maxOList.size() != 0) {
+				maxO = maxOList.get(maxOList.size()-1);
+			} else {
+				maxO = 0;
+			}
 		} else {
 			maxXList.remove(maxXList.size()-1);
-			maxX = maxXList.get(maxXList.size()-1);
+			if (maxXList.size() != 0) {
+				maxX = maxXList.get(maxXList.size()-1);
+			} else {
+				maxX = 0;
+			}
 		}
 		totalMoves--;
 	}
@@ -167,7 +175,7 @@ public class Board {
 		int bestMove = -1;
 		List<Integer> nextMoves = getMoves();
 		if (nextMoves.isEmpty() || depth == 0) {
-			score = evaluate();
+			score = calculateScore(this.board, 1) - calculateScore(this.board, 2);
 			return new int[] {score, bestMove};
 		}
 		for (int n: getMoves()) {
@@ -186,12 +194,13 @@ public class Board {
 					bestMove = n;
 				}
 			}
+			undoMove();
 			if (alpha >= beta) {
 				break;
 			}
-			undoMove();
+			return new int[] {score, bestMove};
 		}
-		return new int[] {score, bestMove};
+		return new int[] {0,0};
 	}
 	
 
@@ -199,61 +208,10 @@ public class Board {
 		int depth = 4;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
-	
-	
-	/*
-	private int evaluateRow(char ch) {
-		int score = 0;
-		for (int i = 0; i < size; i++) {
-			int count = 0;
-			for (int j = 0 ; j < size; i++) {
-				if (board[i][j] == ch) {
-					count++;
-				} else {
-					if (count > 1) {
-						score += (int) Math.pow(10, count);
-						count = 0;
-					}
-				}
-				if (j == size - 1 && count > 1) {
-					score += (int) Math.pow(10, count);
-				}
-			}
-		}
-		return score;
-	}
-	
-	private int evaluateCol(char ch) {
-		int score = 0;
-		for (int i = 0; i < size; i++) {
-			int count = 0;
-			for (int j = 0 ; j < size; i++) {
-				if (board[j][i] == ch) {
-					count++;
-				} else {
-					if (count > 1) {
-						score += (int) Math.pow(10, count);
-						count = 0;
-					}
-				}
-				if (j == size - 1 && count > 1) {
-					score += (int) Math.pow(10, count);
-				}
-			}
-		}
-		return score;
-	}
-	*/
  	
 	
-	
-	
-	
-	private int calculateScore(char[][]board, int move, int seed) {
+	private int calculateScore(char[][]board, int seed) {
 		int[][] intBoard = convertBoard(board);
-		int i = move / size;
-		int j = move % size;
-		intBoard[i][j] = seed;
 		int rScore = evaluateRow(intBoard, seed);
 		int cScore = evaluateCol(intBoard, seed);
 		int dScore = evaluateDig(intBoard, seed);
