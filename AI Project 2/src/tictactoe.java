@@ -4,7 +4,7 @@ import java.io.*;
 public class tictactoe {
 
 	public static void main(String[] args) {
-		Board game = new Board(5, 3);
+		Board game = new Board(10, 5);
 		/*
 		game.makeMove(12);
 		game.printGame();

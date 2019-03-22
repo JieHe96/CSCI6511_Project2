@@ -210,7 +210,7 @@ public class Board {
 	
 
 	public void makeAIMove() {
-		int depth = 6;
+		int depth = 4;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
 	}
 	
