@@ -11,7 +11,7 @@ public class Board {
 	private List<Integer> maxXList;
 	private List<Integer> maxOList;
 	
-	
+	//initialize the board to size * size and target amount of consecutive pieces to win
 	public Board(int size, int target) {
 		this.board = new char[size][size];
 		this.size = size;
@@ -22,6 +22,7 @@ public class Board {
 		this.maxOList = new LinkedList<>();
 	}
 	
+	//print the current state of the game
 	public void printGame() {
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
@@ -35,6 +36,7 @@ public class Board {
 		}
 	}
 	
+	//get a list of all possible moves on the board
 	public List<Integer> getMoves() {
 		List<Integer> moves = new LinkedList<>();
 		for (int row = 0; row < size; row++) {
@@ -47,6 +49,7 @@ public class Board {
 		return moves;
 	}
 	
+	//make a move on the board for the player in turn
 	public void makeMove(int n) {
 		int i = n / size;
 		int j = n % size;
@@ -63,6 +66,7 @@ public class Board {
 		checkWin();
 	}
 	
+	//undo the previous move made
 	public void undoMove() {
 		int last = moveList.get(moveList.size()-1);
 		board[last/size][last%size] = '\u0000';
@@ -84,6 +88,7 @@ public class Board {
 		totalMoves--;
 	}
 	
+	//after making a move or undoing a move, update the information related to current state of the board
 	private void update(int i, int j, char ch) {
 		int rowCount = 0;
 		int colCount = 0;
@@ -152,6 +157,7 @@ public class Board {
 		}
 	}
 	
+	//check if a player has won
 	public int checkWin() {
 		if (maxX == target) {
 			declareWin('X');
@@ -166,10 +172,12 @@ public class Board {
 		return 0;
 	}
 	
+	//declare the winner
 	public void declareWin(char ch) {
 		System.out.println("Game Over! " + ch + " has win!");
 	}
-	 
+	
+	//use minimax and alpha beta pruning to decide the next move
 	private int[] minimax(int depth, int alpha, int beta) {
 		int score = 0;
 		int bestMove = -1;
@@ -204,18 +212,10 @@ public class Board {
 		return new int[] {score, bestMove};
 	}
 	
-
+	//make a move based on the minimax function
 	public void makeAIMove() {
-<<<<<<< HEAD
 		int depth = 4;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
-=======
-		int depth = 6;
-		int[] arr = new int[2];
-		arr = minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		System.out.println(arr[0]);
-		makeMove(arr[1]);
->>>>>>> 5a351c58d4d8cb6eb4c5e864d2ae220ca2083c0d
 	}
 	
 

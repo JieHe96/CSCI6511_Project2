@@ -4,28 +4,19 @@ import java.io.*;
 public class tictactoe {
 
 	public static void main(String[] args) {
-		Board game = new Board(10, 5);
-		/*
-		game.makeMove(12);
-		game.printGame();
-		game.makeMove(13);
-		game.printGame();
-		System.out.println();
-		*/
-//		while(true) {
-//			game.makeAIMove();
-//			game.printGame();
-//			System.out.println();
-//			if(game.checkWin() == 1) break;
-//		}
-		
-		game.makeAIMove();
-		game.printGame();
-		System.out.println();
 		Scanner scanner = new Scanner(System.in);
+		System.out.print("input board size: ");//input the board size
+		int size = scanner.nextInt();
+		System.out.print("input win target: ");//input the number of consecutive pieces to win
+		int target = scanner.nextInt();
+		Board game = new Board(size, target);
+		Scanner scanner1 = new Scanner(System.in);
+		game.makeAIMove();//AI makes the first move
+		game.printGame();
+		System.out.println();
 		while(true) {
-			String line = scanner.nextLine();
-			int move = Integer.parseInt(line);
+			String line = scanner1.nextLine();//AI and the player take turns playing. The player
+			int move = Integer.parseInt(line);//plays by inputting the position of the move
 			game.makeMove(move);
 			game.printGame();
 			System.out.println();
@@ -33,6 +24,5 @@ public class tictactoe {
 			game.printGame();
 			System.out.println();
 		}
-
 	}
 }
