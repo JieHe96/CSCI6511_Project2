@@ -10,8 +10,6 @@ public class Board {
 	private List<Integer> moveList;
 	private List<Integer> maxXList;
 	private List<Integer> maxOList;
-	private int mySeed;
-	private int opponentSeed;
 	
 	
 	public Board(int size, int target) {
@@ -22,8 +20,6 @@ public class Board {
 		this.moveList = new LinkedList<>();
 		this.maxXList = new LinkedList<>();
 		this.maxOList = new LinkedList<>();
-		this.mySeed = 1;
-		this.opponentSeed = 2;
 	}
 	
 	public void printGame() {
@@ -210,113 +206,20 @@ public class Board {
 	
 
 	public void makeAIMove() {
+<<<<<<< HEAD
 		int depth = 4;
 		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
+=======
+		int depth = 6;
+		int[] arr = new int[2];
+		arr = minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		System.out.println(arr[0]);
+		makeMove(arr[1]);
+>>>>>>> 5a351c58d4d8cb6eb4c5e864d2ae220ca2083c0d
 	}
-	
-	/*
-	private int evaluate(char ch) {
-		return evaluateRow(ch) + evaluateCol(ch);
-	}
-	
-	private int evaluateRow(char ch) {
-		int score = 0;
-		for (int i = 0; i < size; i++) {
-			int count = 0;
-			int start = 0;
-			for (int j = 0; j < size; j++) {
-				if (board[i][j] == ch) {
-					if (count == 0) {
-						start = j;
-					}
-					count++;
-					if (j == size - 1) {
-						if (start != 0) {
-							if (board[i][start-1] != '\u0000') {
-								score += (int) Math.pow(10, count-2);
-							} else {
-								score += (int) Math.pow(10, count-1);
-							}
-						} else {
-							score += (int) Math.pow(10, count-2);
-						}
-					}
-				} else {
-					if (j != size - 1) {
-						if (board[i][j] != '\u0000') {
-							if (start == 0 || board[i][start-1] != '\u0000') {
-								score += (int) Math.pow(10, count-2);
-							} else {
-								score += (int) Math.pow(10, count-1);
-							}
-						} else {
-							if (start == 0 || board[i][start-1] != '\u0000') {
-								score += (int) Math.pow(10, count-1);
-							} else {
-								score += (int) Math.pow(10, count);
-							}
-						}
-					}
-					count = 0;
-				}
-			}
-		}
-		return score;
-	}
-	
-	private int evaluateCol(char ch) {
-		int score = 0;
-		for (int i = 0; i < size; i++) {
-			int count = 0;
-			int start = 0;
-			for (int j = 0; j < size; j++) {
-				if (board[j][i] == ch) {
-					if (count == 0) {
-						start = j;
-					}
-					count++;
-					if (j == size - 1) {
-						if (start != 0) {
-							if (board[start-1][i] != '\u0000') {
-								score += (int) Math.pow(10, count-2);
-							} else {
-								score += (int) Math.pow(10, count-1);
-							}
-						} else {
-							score += (int) Math.pow(10, count-2);
-						}
-					}
-				} else {
-					if (j != size - 1) {
-						if (board[j][i] != '\u0000') {
-							if (start == 0 || board[start-1][i] != '\u0000') {
-								score += (int) Math.pow(10, count-2);
-							} else {
-								score += (int) Math.pow(10, count-1);
-							}
-						} else {
-							if (start == 0 || board[start-1][i] != '\u0000') {
-								score += (int) Math.pow(10, count-1);
-							} else {
-								score += (int) Math.pow(10, count);
-							}
-						}
-					}
-					count = 0;
-				}
-			}
-		}
-		return score;
-	}
-	
-	private int evaluateLD(char ch) {
-		for (int i = 0; i < size; i++) {
-			
-		}
-	}
-	*/
 	
 
+	//add up all the heuristic and get the score of a move
 	private int calculateScore(char[][]board, int seed, int oppSeed) {
 		int[][] intBoard = convertBoard(board);
 		int rScore = evaluateRow(intBoard, seed);
@@ -327,12 +230,15 @@ public class Board {
 		int odScore = evaluateDig(intBoard, oppSeed);
 		int cScore1 = evaluateCol2(intBoard, oppSeed, seed);
 		int rScore1 = evaluateRow2(intBoard, oppSeed, seed);
-		int totalScore = rScore + cScore + dScore + cScore1 + rScore1;
-		//int totalScore = rScore + cScore + dScore + cScore1 + rScore1 - orScore - ocScore - odScore;
+		int dScore1 = evaluateDig2(intBoard, oppSeed, seed);
+		int totalScore = rScore + cScore + dScore + cScore1 + rScore1 + dScore1;
+		//int totalScore = rScore + cScore + dScore + cScore1 + rScore1 
+		//				- orScore - ocScore - odScore;
 		//int totalScore = 0;
 		return totalScore;
 	}
 	
+	//calculate row heuristic
 	private int evaluateRow(int[][]board, int seed) {
 		int max = 0;
 		int score = 0;
@@ -343,7 +249,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -354,6 +260,7 @@ public class Board {
 		return score;
 	}
 	
+	//calculate row heuristic where block opponent tik
 	private int evaluateRow2(int[][]board, int oppSeed, int seed) {
 		int max = 0;
 		int score = 0;
@@ -364,7 +271,8 @@ public class Board {
 				}
 				else {
 					if(max > 1 && board[i][j] == seed) {
-						int tmp = (int) Math.pow(7, max);
+						max++;
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -375,6 +283,7 @@ public class Board {
 		return score;
 	}
 	
+	//calculate column heuristic
 	private int evaluateCol(int[][]board, int seed) {
 		int max = 0;
 		int score = 0;
@@ -385,7 +294,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -397,6 +306,7 @@ public class Board {
 		return score;
 	}
 	
+	//calculate column heuristic where block opponent tik
 	private int evaluateCol2(int[][]board, int oppSeed, int seed) {
 		int max = 0;
 		int score = 0;
@@ -407,7 +317,7 @@ public class Board {
 				}
 				else {
 					if(max > 1 && board[j][i] == seed) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -419,6 +329,7 @@ public class Board {
 		return score;
 	}
 	
+	//calculate diagonal heuristic
 	private int evaluateDig(int[][]board, int seed) {
 		int max = 0;
 		int score = 0;
@@ -431,7 +342,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -451,7 +362,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -471,7 +382,7 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
-						int tmp = (int) Math.pow(8, max);
+						int tmp = (int) Math.pow(10, max);
 						score += tmp;
 					}
 					max = 0;
@@ -491,6 +402,92 @@ public class Board {
 				}
 				else {
 					if(max > 1) {
+						int tmp = (int) Math.pow(10, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				i++;
+				n++;
+			}
+			max = 0;
+		}
+		return score;
+	}
+	
+	//calculate diagonal heuristic where block opponent tik
+	private int evaluateDig2(int[][]board, int oppSeed, int seed) {
+		int max = 0;
+		int score = 0;
+		for(int i = 1; i < size; i++) {
+			int j = 0;
+			int m = i;
+			while(m >= 0 && j < size) {
+				if(board[m][j] == oppSeed) {
+					max++;
+				}
+				else {
+					if(max > 1 && board[m][j] == seed) {
+						int tmp = (int) Math.pow(8, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				m--;
+				j++;
+			}
+			max = 0;
+		}
+		max = 0;
+		for(int j = 1; j < size-1; j++) {
+			int i = size-1;
+			int n = j;
+			while(i >= 0 && n < size) {
+				if(board[i][n] == oppSeed) {
+					max++;
+				}
+				else {
+					if(max > 1 && board[i][n] == seed) {
+						int tmp = (int) Math.pow(8, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				i--;
+				n++;
+			}
+			max = 0;
+		}
+		max = 0;
+		for(int i = size-2; i >= 0; i--) {
+			int j = 0;
+			int m = i;
+			while(m < size && j < size) {
+				if(board[m][j] == oppSeed) {
+					max++;
+				}
+				else {
+					if(max > 1 && board[m][j] == seed) {
+						int tmp = (int) Math.pow(8, max);
+						score += tmp;
+					}
+					max = 0;
+				}
+				m++;
+				j++;
+			}
+			max = 0;
+		}
+		max = 0;
+		for(int j = 1; j < size-1; j++) {
+			int i = 0;
+			int n = j;
+			while(i < size && n < size) {
+				if(board[i][n] == oppSeed) {
+					max++;
+				}
+				else {
+					if(max > 1 && board[i][n] == seed) {
 						int tmp = (int) Math.pow(8, max);
 						score += tmp;
 					}
@@ -504,6 +501,7 @@ public class Board {
 		return score;
 	}
 	
+	//convert char board to int board for helper function
 	private int[][] convertBoard(char[][]board) {
 		int[][] convertBoard = new int[size][size];
 		for(int i = 0; i < size; i++) {
