@@ -24,12 +24,25 @@ public class Board {
 	
 	//print the current state of the game
 	public void printGame() {
+		System.out.print(" ");
+		for (int i = 0; i < size; i++) {
+			System.out.print(i + ".");
+		}
+		System.out.println();
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				if (board[row][col] != 'X' && board[row][col] != 'O') {
-					System.out.print("_.");
+					if (col == 0) {
+						System.out.print(row + "_.");
+					} else {
+						System.out.print("_.");
+					}
 				} else {
-					System.out.print(board[row][col] + ".");
+					if (col == 0) {
+						System.out.print(row + "" + board[row][col] + ".");
+					} else {
+						System.out.print(board[row][col] + ".");
+					}
 				}
 			}
 			System.out.println();
@@ -175,6 +188,8 @@ public class Board {
 	//declare the winner
 	public void declareWin(char ch) {
 		System.out.println("Game Over! " + ch + " has win!");
+		printGame();
+		System.exit(0);
 	}
 	
 	//use minimax and alpha beta pruning to decide the next move
@@ -183,11 +198,10 @@ public class Board {
 		int bestMove = -1;
 		List<Integer> nextMoves = getMoves();
 		if (nextMoves.isEmpty() || depth == 0) {
-			score = calculateScore(this.board, 1, 2);
-			//System.out.println("Score: " + score);
+			score = evaluate('X') - evaluate('O'); //calculateScore(this.board, 1, 2);
+			//System.out.println("Score: " + score + ", bestmove: " + bestMove);
 			return new int[] {score, bestMove};
 		}
-		//score = 0;
 		for (int n: nextMoves) {
 			if ((totalMoves + depth) % 2 == 0) {
 				board[n/size][n%size] = 'X';
@@ -214,11 +228,302 @@ public class Board {
 	
 	//make a move based on the minimax function
 	public void makeAIMove() {
-		int depth = 4;
-		makeMove(minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE)[1]);
+		if (totalMoves == 0) {
+			makeMove((size/2)*size+(size/2));
+		} else {
+			int depth = 5;
+			int[] array = minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
+			System.out.println("best score: " + array[0]);
+			makeMove(array[1]);
+		}
 	}
 	
-
+	public int evaluate(char ch) {
+		return evaluateRow(ch) + evaluateCol(ch) + evaluateLD(ch) + evaluateRD(ch);
+	}
+	
+	public int evaluateLD(char ch) {
+		int score = 0;
+		for (int gap = 0; gap <= size - target; gap++) {
+			int start = 0;
+			int count = 0;
+			for (int i = 0; i + gap < size; i++) {
+				if (board[gap+i][i] == ch) {
+					if (count == 0) {
+						start = i;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (gap + i == size - 1) {
+						if (count > 1 && start != 0 && board[gap+start-1][start-1] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[gap+i][i] == '\u0000') {
+							if (start == 0) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[gap+start-1][start-1] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != 0) {
+								if (board[gap+start-1][start-1] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		
+		for (int gap = 1; gap <= size - target; gap++) {
+			int start = 0;
+			int count = 0;
+			for (int i = 0; i + gap < size; i++) {
+				if (board[i][i+gap] == ch) {
+					if (count == 0) {
+						start = i;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (i + gap == size - 1) {
+						if (count > 1 && start != 0 && board[start-1][start+gap-1] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[i][i+gap] == '\u0000') {
+							if (start == 0) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[start-1][start+gap-1] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != 0) {
+								if (board[start-1][start+gap-1] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	public int evaluateRD(char ch) {
+		int score = 0;
+		for (int sum = target - 1; sum < size; sum++) {
+			int count = 0;
+			int start = 0;
+			for (int i = 0; i <= sum; i++) {
+				if (board[i][sum-i] == ch) {
+					if (count == 0) {
+						start = i;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (i == sum) {
+						if (count > 1 && start != 0 && board[start+1][sum-start-1] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[i][sum-i] == '\u0000') {
+							if (start == 0) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[start+1][sum-start-1] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != 0) {
+								if (board[start+1][sum-start-1] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		
+		for (int sum = size; sum < 2*size - target; sum++) {
+			int start = 0;
+			int count = 0;
+			for (int i = size - 1; sum - i < size; i--) {
+				if (board[sum-i][i] == ch) {
+					if (count == 0) {
+						start = i;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (sum - i == size - 1) {
+						if (count > 1 && start != size - 1 && board[sum-start-1][start+1] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[i][sum-i] == '\u0000') {
+							if (start == size - 1) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[sum-start-1][start+1] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != size - 1) {
+								if (board[sum-start-1][start+1] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	public int evaluateRow(char ch) {
+		int score = 0;
+		for (int i = 0; i < size; i++) {
+			int start = 0;
+			int count = 0;
+			for (int j = 0; j < size; j++) {
+				if (board[i][j] == ch) {
+					if (count == 0) {
+						start = j;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (j == size - 1) {
+						if (count > 1 && start != 0 && board[i][start-1] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[i][j] == '\u0000') {
+							if (start == 0) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[i][start-1] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != 0) {
+								if (board[i][start-1] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	public int evaluateCol(char ch) {
+		int score = 0;
+		for (int j = 0; j < size; j++) {
+			int start = 0;
+			int count = 0;
+			for (int i = 0; i < size; i++) {
+				if (board[i][j] == ch) {
+					if (count == 0) {
+						start = i;
+					}
+					count++;
+					if (count == target) {
+						score += (int) Math.pow(10, count);
+						count = 0;
+						continue;
+					}
+					if (i == size - 1) {
+						if (count > 1 && start != 0 && board[start-1][j] == '\u0000') {
+							score += (int) Math.pow(10, count-1);
+						}
+					}
+				} else {
+					if (count > 0) {
+						if (board[i][j] == '\u0000') {
+							if (start == 0) {
+								score += (int) Math.pow(10, count-1);
+							} else {
+								if (board[start-1][j] == '\u0000') {
+									score += (int) Math.pow(10, count);
+								} else {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						} else {
+							if (start != 0) {
+								if (board[start-1][j] == '\u0000') {
+									score += (int) Math.pow(10, count-1);
+								}
+							}
+						}
+					}
+					count = 0;
+				}
+			}
+		}
+		return score;
+	}
+	
+	/*
+	
 	//add up all the heuristic and get the score of a move
 	private int calculateScore(char[][]board, int seed, int oppSeed) {
 		int[][] intBoard = convertBoard(board);
@@ -519,4 +824,6 @@ public class Board {
 		}
 		return convertBoard;
 	}
+	*/
 }
+
