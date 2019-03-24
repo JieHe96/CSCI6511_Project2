@@ -26,20 +26,20 @@ public class Board {
 	public void printGame() {
 		System.out.print(" ");
 		for (int i = 0; i < size; i++) {
-			System.out.print(i + ".");
+			System.out.print(i%10 + ".");
 		}
 		System.out.println();
 		for (int row = 0; row < size; row++) {
 			for (int col = 0; col < size; col++) {
 				if (board[row][col] != 'X' && board[row][col] != 'O') {
 					if (col == 0) {
-						System.out.print(row + "_.");
+						System.out.print(row%10 + "_.");
 					} else {
 						System.out.print("_.");
 					}
 				} else {
 					if (col == 0) {
-						System.out.print(row + "" + board[row][col] + ".");
+						System.out.print(row%10 + "" + board[row][col] + ".");
 					} else {
 						System.out.print(board[row][col] + ".");
 					}
@@ -231,9 +231,15 @@ public class Board {
 		if (totalMoves == 0) {
 			makeMove((size/2)*size+(size/2));
 		} else {
-			int depth = 5;
+			int depth = 0;
+			if (totalMoves < size * size * 0.6) {
+				depth = 3;
+			} else if (totalMoves < size * size * 0.8) {
+				depth = 5;
+			} else {
+				depth = 7;
+			}
 			int[] array = minimax(depth, Integer.MIN_VALUE, Integer.MAX_VALUE);
-			System.out.println("best score: " + array[0]);
 			makeMove(array[1]);
 		}
 	}
